@@ -2,6 +2,7 @@ package modules
 
 import com.google.inject.name.Named
 import com.google.inject.{ AbstractModule, Provides }
+import com.mohiva.play.silhouette.api.actions.{ SecuredErrorHandler, UnsecuredErrorHandler }
 import com.mohiva.play.silhouette.api.crypto.{ CookieSigner, Crypter, CrypterAuthenticatorEncoder }
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services._
@@ -31,7 +32,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import play.modules.reactivemongo.ReactiveMongoApi
-import utils.auth.DefaultEnv
+import utils.auth.{ CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv }
 
 /**
  * The Guice module which wires all Silhouette dependencies.
@@ -45,6 +46,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[UserService].to[UserServiceImpl]
     bind[UserDAO].to[UserDAOImpl]
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
+    //bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
+    //bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
     bind[CacheLayer].to[PlayCacheLayer]
     bind[OAuth2StateProvider].to[DummyStateProvider]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
