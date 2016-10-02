@@ -18,7 +18,7 @@ import com.mohiva.play.silhouette.impl.providers.oauth2.state.DummyStateProvider
 import com.mohiva.play.silhouette.impl.services._
 import com.mohiva.play.silhouette.impl.util._
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
-import com.mohiva.play.silhouette.persistence.daos.{ DelegableAuthInfoDAO, InMemoryAuthInfoDAO }
+import com.mohiva.play.silhouette.persistence.daos.{ DelegableAuthInfoDAO, InMemoryAuthInfoDAO, MongoAuthInfoDAO }
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import models.daos._
 import models.services.{ UserService, UserServiceImpl }
@@ -28,7 +28,9 @@ import net.ceedubs.ficus.readers.EnumerationReader._
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
+import play.modules.reactivemongo.ReactiveMongoApi
 import utils.auth.DefaultEnv
 
 /**
@@ -50,12 +52,58 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())
+  }
 
-    // Replace this with the bindings to your concrete DAOs
-    bind[DelegableAuthInfoDAO[PasswordInfo]].toInstance(new InMemoryAuthInfoDAO[PasswordInfo])
-    bind[DelegableAuthInfoDAO[OAuth1Info]].toInstance(new InMemoryAuthInfoDAO[OAuth1Info])
-    bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
-    bind[DelegableAuthInfoDAO[OpenIDInfo]].toInstance(new InMemoryAuthInfoDAO[OpenIDInfo])
+  /**
+   * Provides the implementation of the delegable OAuth1 auth info DAO.
+   *
+   * @param reactiveMongoApi The ReactiveMongo API.
+   * @param config The Play configuration.
+   * @return The implementation of the delegable OAuth1 auth info DAO.
+   */
+  @Provides
+  def provideOAuth1InfoDAO(reactiveMongoApi: ReactiveMongoApi, config: Configuration): DelegableAuthInfoDAO[OAuth1Info] = {
+    implicit lazy val format = Json.format[OAuth1Info]
+    new MongoAuthInfoDAO[OAuth1Info](reactiveMongoApi, config)
+  }
+
+  /**
+   * Provides the implementation of the delegable OAuth2 auth info DAO.
+   *
+   * @param reactiveMongoApi The ReactiveMongo API.
+   * @param config The Play configuration.
+   * @return The implementation of the delegable OAuth1 auth info DAO.
+   */
+  @Provides
+  def provideOAuth2InfoDAO(reactiveMongoApi: ReactiveMongoApi, config: Configuration): DelegableAuthInfoDAO[OAuth2Info] = {
+    implicit lazy val format = Json.format[OAuth2Info]
+    new MongoAuthInfoDAO[OAuth2Info](reactiveMongoApi, config)
+  }
+
+  /**
+   * Provides the implementation of the delegable OpenID auth info DAO.
+   *
+   * @param reactiveMongoApi The ReactiveMongo API.
+   * @param config The Play configuration.
+   * @return The implementation of the delegable OAuth1 auth info DAO.
+   */
+  @Provides
+  def provideOpenIDInfoDAO(reactiveMongoApi: ReactiveMongoApi, config: Configuration): DelegableAuthInfoDAO[OpenIDInfo] = {
+    implicit lazy val format = Json.format[OpenIDInfo]
+    new MongoAuthInfoDAO[OpenIDInfo](reactiveMongoApi, config)
+  }
+
+  /**
+   * Provides the implementation of the delegable Password auth info DAO.
+   *
+   * @param reactiveMongoApi The ReactiveMongo API.
+   * @param config The Play configuration.
+   * @return The implementation of the delegable OAuth1 auth info DAO.
+   */
+  @Provides
+  def providePasswordInfoDAO(reactiveMongoApi: ReactiveMongoApi, config: Configuration): DelegableAuthInfoDAO[PasswordInfo] = {
+    implicit lazy val format = Json.format[PasswordInfo]
+    new MongoAuthInfoDAO[PasswordInfo](reactiveMongoApi, config)
   }
 
   /**
