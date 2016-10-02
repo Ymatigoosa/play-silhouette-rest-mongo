@@ -22,7 +22,7 @@ import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.{ DelegableAuthInfoDAO, InMemoryAuthInfoDAO, MongoAuthInfoDAO }
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import models.daos._
-import models.services.{ UserService, UserServiceImpl }
+import models.services.{ BusinessService, BusinessServiceImpl, UserService, UserServiceImpl }
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.ceedubs.ficus.readers.EnumerationReader._
@@ -43,6 +43,10 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * Configures the module.
    */
   def configure() {
+    // todo - move to AppModule
+    bind[BusinessService].to[BusinessServiceImpl]
+    bind[BusinessDAO].to[BusinessDAOImpl]
+
     bind[UserService].to[UserServiceImpl]
     bind[UserDAO].to[UserDAOImpl]
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
