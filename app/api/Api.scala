@@ -22,7 +22,7 @@ object Api {
   final val HEADER_DATE = "Date";
   final val HEADER_LOCATION = "Location";
   final val HEADER_API_KEY = "X-Api-Key";
-  final val HEADER_AUTH_TOKEN = "X-Auth-Token"
+  final val HEADER_AUTH_TOKEN = "X-Auth-Token" // todo - use shiluette
 
   final val HEADER_PAGE = "X-Page";
   final val HEADER_PAGE_FROM = "X-Page-From";

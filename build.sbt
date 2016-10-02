@@ -19,6 +19,8 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.0.1",
   "com.iheart" %% "ficus" % "1.2.6",
   "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",
+  specs2 % Test,
+  "org.specs2" %% "specs2-matcher-extra" % "3.8.5" % Test,
   cache,
   filters
 )
